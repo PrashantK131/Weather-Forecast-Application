@@ -41,3 +41,53 @@
   transition: background 0.25s ease, transform 0.25s ease;
   cursor: default; /* Cards are not interactive — suppress pointer cursor */
 }
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif; 
+    background: var(--bg-default);      
+    min-height: 100vh;
+    transition: background 0.8s ease;   
+  }
+}
+
+@layer components {
+
+  /* Unit Toggle Buttons (°C / °F)  */
+  .unit-btn {
+    padding: 0.25rem 0.75rem;
+    border-radius: 0.5rem;
+    font-family: 'Syne', sans-serif;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.45); /* Inactive: dimmed */
+    transition: all 0.2s ease;
+  }
+
+  .unit-btn.active {
+    background: rgba(255, 255, 255, 0.25); /* Active: filled pill */
+    color: white;
+  }
+
+  /* Recent-Cities Dropdown Items  */
+  .recent-item {
+    padding: 0.6rem 1rem;
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 0.875rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: background 0.15s ease;
+  }
+
+  .recent-item:hover {
+    background: rgba(255, 255, 255, 0.09);
+    color: #fff;
+  }
+}
