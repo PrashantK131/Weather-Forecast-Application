@@ -341,6 +341,9 @@
   .float-anim {
     animation: float 3.5s ease-in-out infinite;
   }
+  .float-anim {
+    animation: float 3.5s ease-in-out infinite;
+  }
   .grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -891,6 +894,40 @@
   .recent-item:hover {
     background: rgba(255, 255, 255, 0.09);
     color: #fff;
+  }
+}
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+@keyframes rainFall {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  5% {
+    opacity: 0.7;
+  }
+  95% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(110vh);
+  }
+}
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 @property --tw-translate-x {
