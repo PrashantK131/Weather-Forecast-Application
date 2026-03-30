@@ -207,6 +207,12 @@
   .pointer-events-none {
     pointer-events: none;
   }
+  .rain-drop {
+    animation: rainFall linear infinite;
+    position: absolute;
+    top: -20px;
+    width: 1.5px;
+  }
   .absolute {
     position: absolute;
   }
@@ -266,6 +272,24 @@
   }
   .z-50 {
     z-index: 50;
+  }
+  .container {
+    width: 100%;
+    @media (width >= 40rem) {
+      max-width: 40rem;
+    }
+    @media (width >= 48rem) {
+      max-width: 48rem;
+    }
+    @media (width >= 64rem) {
+      max-width: 64rem;
+    }
+    @media (width >= 80rem) {
+      max-width: 80rem;
+    }
+    @media (width >= 96rem) {
+      max-width: 96rem;
+    }
   }
   .my-1 {
     margin-block: calc(var(--spacing) * 1);

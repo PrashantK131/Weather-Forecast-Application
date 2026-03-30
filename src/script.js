@@ -261,3 +261,65 @@ function renderForecast(data) {
 
     forecastSection.classList.remove("hidden");
 }
+
+
+function setUnit(u) {
+    unit = u;
+    renderTemp();
+    
+    document.getElementById("btn-c").classList.toggle("active", u === "C");
+    document.getElementById("btn-f").classList.toggle("active", u === "F");
+}
+
+// For Dynamic background
+function updateBg(main, id) {
+    const body = document.getElementById("app-body");
+    body.className = ""; 
+
+    const h       = new Date().getHours();
+    const isNight = h >= 20 || h < 5; 
+
+    
+    if (["Rain", "Drizzle", "Thunderstorm"].includes(main)) {
+        body.classList.add("bg-rainy");
+        startRain();
+        return;
+    }
+
+    stopRain(); 
+
+    if (isNight) body.classList.add("bg-night");
+    else if (main === "Clear") body.classList.add("bg-clear");
+    else if (main === "Clouds") body.classList.add("bg-cloudy");
+    else if (main === "Snow") body.classList.add("bg-snow");
+    else if (id >= 800) body.classList.add("bg-clear");  
+    else body.classList.add("bg-cloudy"); 
+}
+
+// For Rain animation
+function startRain() {
+    rainContainer.classList.remove("hidden");
+    rainContainer.innerHTML = ""; 
+
+    const count = window.innerWidth < 768 ? 55 : 110;
+
+    for (let i = 0; i < count; i++) {
+        const d = document.createElement("div");
+        d.className = "rain-drop";
+
+        Object.assign(d.style, {
+        left:              Math.random() * 100 + "%",
+        height:            (15 + Math.random() * 22) + "px",
+        opacity:           (0.3 + Math.random() * 0.5).toString(),
+        animationDuration: (0.55 + Math.random() * 0.7) + "s",
+        animationDelay:    (Math.random() * 2) + "s"
+        });
+
+        rainContainer.appendChild(d);
+  }
+}
+
+function stopRain() {
+  rainContainer.classList.add("hidden");
+  rainContainer.innerHTML = "";
+}
