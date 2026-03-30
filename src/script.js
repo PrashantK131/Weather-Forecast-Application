@@ -113,3 +113,67 @@ function useCurrentLocation() {
         { timeout: 10000, maximumAge: 60000 } 
     );
 }
+
+
+// Fetches both the current weather and 5-day forecast for a city
+async function fetchByCity(city) {
+    showLoading(true);
+    try {
+            const [wRes, fRes] = await Promise.all([
+            fetch(`${BASE}/weather?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric`),
+            fetch(`${BASE}/forecast?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric`)
+        ]);
+        await processResponses(wRes, fRes);
+    } catch(e) {
+        handleNetError(e);
+    } finally {
+        showLoading(false);
+    }
+}
+
+// Fetches both the current weather and 5-day forecast using GPS coordinates
+async function fetchByCoords(lat, lon) {
+    showLoading(true);
+    try {
+            const [wRes, fRes] = await Promise.all([
+            fetch(`${BASE}/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`),
+            fetch(`${BASE}/forecast?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric`)
+        ]);
+        await processResponses(wRes, fRes);
+    } catch(e) {
+        handleNetError(e);
+    } finally {
+        showLoading(false);
+    }
+}
+
+/**
+ * Processes the raw HTTP responses from the two API calls.
+ * Handles HTTP-level errors (401, 404, 429, etc.) with user-friendly toasts, then delegates rendering to renderCurrent() and renderForecast().
+ * wRes - Response from the /weather endpoint.
+ * fRes - Response from the /forecast endpoint.
+ */
+async function processResponses(wRes, fRes) {
+    if (!wRes.ok) {
+        
+        const msgs = {
+            401: "❌ Invalid API key. Update API_KEY in the code.",
+            404: "❌ City not found. Check spelling and try again.",
+            429: "⚠️ Rate limit reached. Wait a moment and retry."
+        };
+        showToast(msgs[wRes.status] || `❌ API error (${wRes.status}).`, "error");
+        return;
+    }
+
+    const wData = await wRes.json();
+    const fData = fRes.ok ? await fRes.json() : null; // Forecast is non-critical
+
+    renderCurrent(wData);
+    if (fData) renderForecast(fData);
+
+    saveRecent(wData.name + ", " + wData.sys.country);
+
+    updateBg(wData.weather[0].main, wData.weather[0].id);
+
+    checkTempAlert(wData.main.temp);
+}
