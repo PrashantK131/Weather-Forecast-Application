@@ -22,6 +22,8 @@
     --text-xs--line-height: calc(1 / 0.75);
     --text-sm: 0.875rem;
     --text-sm--line-height: calc(1.25 / 0.875);
+    --text-lg: 1.125rem;
+    --text-lg--line-height: calc(1.75 / 1.125);
     --text-xl: 1.25rem;
     --text-xl--line-height: calc(1.75 / 1.25);
     --text-2xl: 1.5rem;
@@ -267,6 +269,9 @@
   .mt-2 {
     margin-top: calc(var(--spacing) * 2);
   }
+  .mb-4 {
+    margin-bottom: calc(var(--spacing) * 4);
+  }
   .mb-5 {
     margin-bottom: calc(var(--spacing) * 5);
   }
@@ -278,6 +283,9 @@
   }
   .flex {
     display: flex;
+  }
+  .grid {
+    display: grid;
   }
   .hidden {
     display: none;
@@ -343,6 +351,9 @@
   }
   .resize {
     resize: both;
+  }
+  .grid-cols-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .flex-col {
     flex-direction: column;
@@ -493,6 +504,12 @@
   .p-1 {
     padding: calc(var(--spacing) * 1);
   }
+  .p-3 {
+    padding: calc(var(--spacing) * 3);
+  }
+  .p-4 {
+    padding: calc(var(--spacing) * 4);
+  }
   .p-5 {
     padding: calc(var(--spacing) * 5);
   }
@@ -550,6 +567,10 @@
   .text-7xl {
     font-size: var(--text-7xl);
     line-height: var(--tw-leading, var(--text-7xl--line-height));
+  }
+  .text-lg {
+    font-size: var(--text-lg);
+    line-height: var(--tw-leading, var(--text-lg--line-height));
   }
   .text-sm {
     font-size: var(--text-sm);
@@ -768,14 +789,34 @@
       scale: var(--tw-scale-x) var(--tw-scale-y);
     }
   }
+  .sm\:grid-cols-3 {
+    @media (width >= 40rem) {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  .sm\:grid-cols-4 {
+    @media (width >= 40rem) {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
   .md\:w-80 {
     @media (width >= 48rem) {
       width: calc(var(--spacing) * 80);
     }
   }
+  .md\:grid-cols-5 {
+    @media (width >= 48rem) {
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+  }
   .md\:flex-row {
     @media (width >= 48rem) {
       flex-direction: row;
+    }
+  }
+  .md\:p-6 {
+    @media (width >= 48rem) {
+      padding: calc(var(--spacing) * 6);
     }
   }
   .md\:p-8 {
