@@ -20,6 +20,25 @@
     <!-- Toast or Popup Notifications -->
     <div id="toast-container" class="fixed top-4 right-4 z-50 flex flex-col gap-3 w-80 max-w-[calc(100vw-2rem)]"></div>
 
+    <!-- Temperature Alert -->
+    <div id="temp-alert" class="fixed top-0 left-0 right-0 z-40 hidden">
+        <div class="bg-gradient-to-r from-red-600 via-orange-500 to-amber-500 text-white px-5 py-3 flex items-center justify-between shadow-xl">
+            <div class="flex items-center gap-3">
+                <span class="text-xl"> ⚠️ </span>
+                <span id="temp-alert-msg" class="font-display font-semibold text-sm"></span>
+            </div>
+            <button onclick="document.getElementById('temp-alert').classList.add('hidden')" class="text-white/60 hover:text-white text-xl leading-none transition-colors ml-4"> × </button>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loading-overlay" class="fixed inset-0 z-50 flex items-center justify-center hidden" style="background:rgba(0,0,0,0.5);backdrop-filter:blur(6px)">
+        <div class="flex flex-col items-center gap-4">
+            <div class="spinner"></div>
+            <p class="text-white font-display font-semibold animate-pulse">Fetching Weather…</p>
+        </div>
+    </div>
+
     
 
     <script src="./src/script.js"></script>
