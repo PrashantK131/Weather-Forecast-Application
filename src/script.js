@@ -428,3 +428,84 @@ function clearSearch() {
     clearBtn.classList.add("hidden");
     cityInput.focus();
 }
+
+// For Popup or Toast Notification System
+function showToast(msg, type = "info") {
+    const styles = {
+        error:   "bg-red-500/85 border-red-400/40",
+        warning: "bg-amber-500/85 border-amber-400/40",
+        success: "bg-emerald-500/85 border-emerald-400/40",
+        info:    "bg-sky-500/85 border-sky-400/40"
+    };
+
+    const t = document.createElement("div");
+    t.className = `toast-in ${styles[type] || styles.info} backdrop-blur-md border text-white rounded-xl px-4 py-3 shadow-2xl flex items-start gap-3 text-sm font-body`;
+    t.innerHTML = `
+        <span class="flex-1">${msg}</span>
+        <button onclick="dismissToast(this.parentElement)" class="text-white/55 hover:text-white text-xl leading-none ml-2 flex-shrink-0">×</button>`;
+
+    document.getElementById("toast-container").appendChild(t);
+
+    setTimeout(() => dismissToast(t), 5500);
+}
+
+
+function dismissToast(el) {
+    if (!el?.parentElement) return;
+    el.classList.replace("toast-in", "toast-out"); 
+    setTimeout(() => el.remove(), 280);            
+}
+
+// For loading overlay
+function showLoading(v) {
+    loadingOverlay.classList.toggle("hidden", !v);
+}
+
+// Helper Function
+
+function setText(id, val) {
+    const el = document.getElementById(id);
+    if (el) el.textContent = val;
+}
+
+// For converting celsius to fahrenheit
+function cToF(c) { 
+    return c * 9 / 5 + 32; 
+}
+
+
+function fmtUnix(ts, tz) {
+    const d = new Date((ts + tz) * 1000);
+    return d.toUTCString().slice(17, 22);
+}
+
+// For returning the current local time of the searched city as a formatted string.
+function localTime(tz) {
+    const now = new Date();
+    const utc = now.getTime() + now.getTimezoneOffset() * 60000;
+    return new Date(utc + tz * 1000).toLocaleTimeString("en-US", {
+        hour: "2-digit", minute: "2-digit"
+    });
+}
+
+// For Mapping an OpenWeatherMap condition ID to the relatable emoji.
+function weatherEmoji(id) {
+    if (id >= 200 && id < 300) return "⛈️";  // Thunderstorm
+    if (id >= 300 && id < 400) return "🌦️";  // Drizzle
+    if (id >= 500 && id < 600) return "🌧️";  // Rain
+    if (id >= 600 && id < 700) return "❄️";  // Snow
+    if (id >= 700 && id < 800) return id === 741 ? "🌫️" : id === 781 ? "🌪️" : "🌁"; // Atmosphere
+    if (id === 800) return "☀️";  // Clear sky
+    if (id === 801) return "🌤️";  // Few clouds 
+    if (id === 802) return "⛅";  // Scattered clouds 
+    if (id >= 803) return "☁️";  // Broken / overcast clouds
+    return "🌈"; 
+}
+
+// For handling network errors
+function handleNetError(err) {
+    console.error(err);
+    showToast(
+        err.name === "TypeError" ? "❌ Network error. Check your internet connection and ensure the API key is set." : "❌ Unexpected error. Please try again.", "error"
+    );
+}
