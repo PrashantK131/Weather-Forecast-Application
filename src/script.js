@@ -24,29 +24,26 @@ const tempAlertMsg   = document.getElementById("temp-alert-msg");
 const rainContainer  = document.getElementById("rain-container");
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Restore any cities saved in a previous session.
+    
     loadRecent();
 
-    // Show the current date/time in the header and keep it updated every minute.
     refreshClock();
     setInterval(refreshClock, 60000);
 
-    // Wire up the search input's interactive behaviours.
     cityInput.addEventListener("input",   onInput);
     cityInput.addEventListener("focus",   onFocus);
     cityInput.addEventListener("keydown", e => {
-        if (e.key === "Enter")  searchByCity();   // Submit on Enter
-        if (e.key === "Escape") closeDropdown();  // Dismiss recent-cities on Escape
+        if (e.key === "Enter")  searchByCity();   
+        if (e.key === "Escape") closeDropdown();  
     });
 
-    // Close the dropdown when the user clicks anywhere outside it.
     document.addEventListener("click", e => {
         if (!e.target.closest("#city-input") && !e.target.closest("#recent-dropdown"))
         closeDropdown();
     });
 });
 
-// Updates the header date/time display with the current local time. Called on load and every 60 seconds via setInterval.
+// Updates the header date/time display with the current local time. Called on load and every 60 seconds using setInterval.
 function refreshClock() {
     const el = document.getElementById("current-datetime");
     if (!el) return;
@@ -147,12 +144,7 @@ async function fetchByCoords(lat, lon) {
     }
 }
 
-/**
- * Processes the raw HTTP responses from the two API calls.
- * Handles HTTP-level errors (401, 404, 429, etc.) with user-friendly toasts, then delegates rendering to renderCurrent() and renderForecast().
- * wRes - Response from the /weather endpoint.
- * fRes - Response from the /forecast endpoint.
- */
+// For Processing, handling http errors, wRes - Response from the /weather endpoint and fRes - Response from the /forecast endpoint.
 async function processResponses(wRes, fRes) {
     if (!wRes.ok) {
         
@@ -181,7 +173,7 @@ async function processResponses(wRes, fRes) {
 // For rendering the current weather
 function renderCurrent(d) {
 
-    tempC      = d.main.temp;
+    tempC = d.main.temp;
     feelsLikeC = d.main.feels_like;
 
     setText("city-name",    d.name);
@@ -232,19 +224,19 @@ function renderForecast(data) {
             weekday: "short", month: "short", day: "numeric"
         });
         const h = d.getHours();
-        // Replace existing entry for this day only if the new one is closer to 12:00.
+        
         if (!byDay[key] || Math.abs(h - 12) < Math.abs(new Date(byDay[key].dt * 1000).getHours() - 12))
         byDay[key] = item;
     });
 
     const grid = document.getElementById("forecast-grid");
-    grid.innerHTML = ""; // Clear any previous forecast
+    grid.innerHTML = ""; 
 
     // Render up to 5 day cards with a staggered reveal animation.
     Object.entries(byDay).slice(0, 5).forEach(([label, item], i) => {
         const c = document.createElement("div");
         c.className = "forecast-card card-reveal";
-        c.style.animationDelay = i * 70 + "ms"; // Stagger each card by 70 ms
+        c.style.animationDelay = i * 70 + "ms"; 
 
         c.innerHTML = `
         <p class="text-white/55 text-xs font-mono-custom text-center leading-tight">${label}</p>
@@ -462,7 +454,6 @@ function showLoading(v) {
 }
 
 // Helper Function
-
 function setText(id, val) {
     const el = document.getElementById(id);
     if (el) el.textContent = val;
