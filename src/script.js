@@ -177,3 +177,87 @@ async function processResponses(wRes, fRes) {
 
     checkTempAlert(wData.main.temp);
 }
+
+// For rendering the current weather
+function renderCurrent(d) {
+
+    tempC      = d.main.temp;
+    feelsLikeC = d.main.feels_like;
+
+    setText("city-name",    d.name);
+    setText("country-info", d.sys.country + " · " + localTime(d.timezone));
+    setText("weather-date", new Date().toLocaleDateString("en-US", {
+        weekday: "long", 
+        year: "numeric", 
+        month: "long", 
+        day: "numeric"
+    }));
+    setText("weather-icon", weatherEmoji(d.weather[0].id));
+    setText("weather-desc", d.weather[0].description);
+    setText("humidity", d.main.humidity + "%");
+    setText("wind-speed", Math.round(d.wind.speed * 3.6) + " km/h"); // m/s → km/h
+    setText("visibility", d.visibility ? (d.visibility / 1000).toFixed(1) + " km" : "N/A");
+    setText("pressure", d.main.pressure + " hPa");
+    setText("sunrise", fmtUnix(d.sys.sunrise, d.timezone));
+    setText("sunset", fmtUnix(d.sys.sunset,  d.timezone));
+
+    renderTemp(); // Apply the currently selected unit (°C or °F).
+
+    // Transition from the welcome placeholder to the actual weather card.
+    welcomeState.classList.add("hidden");
+    weatherCard.classList.remove("hidden");
+    weatherCard.classList.add("card-reveal"); // CSS entry animation
+}
+
+// For rendering the temperatures
+function renderTemp() {
+
+    if (tempC === null) return; 
+
+    const t  = unit === "C" ? Math.round(tempC) : Math.round(cToF(tempC));
+    const fl = unit === "C" ? Math.round(feelsLikeC) + "°C" : Math.round(cToF(feelsLikeC)) + "°F";
+
+    setText("temp-value", t);
+    setText("temp-unit-lbl", unit === "C" ? "°C" : "°F");
+    setText("feels-like", fl);
+}
+
+// For rendering the 5 day forecast
+function renderForecast(data) {
+    
+    const byDay = {};
+    data.list.forEach(item => {
+            const d   = new Date(item.dt * 1000);
+            const key = d.toLocaleDateString("en-US", {
+            weekday: "short", month: "short", day: "numeric"
+        });
+        const h = d.getHours();
+        // Replace existing entry for this day only if the new one is closer to 12:00.
+        if (!byDay[key] || Math.abs(h - 12) < Math.abs(new Date(byDay[key].dt * 1000).getHours() - 12))
+        byDay[key] = item;
+    });
+
+    const grid = document.getElementById("forecast-grid");
+    grid.innerHTML = ""; // Clear any previous forecast
+
+    // Render up to 5 day cards with a staggered reveal animation.
+    Object.entries(byDay).slice(0, 5).forEach(([label, item], i) => {
+        const c = document.createElement("div");
+        c.className = "forecast-card card-reveal";
+        c.style.animationDelay = i * 70 + "ms"; // Stagger each card by 70 ms
+
+        c.innerHTML = `
+        <p class="text-white/55 text-xs font-mono-custom text-center leading-tight">${label}</p>
+        <div class="text-3xl my-1">${weatherEmoji(item.weather[0].id)}</div>
+        <p class="text-white font-display font-bold text-sm">${Math.round(item.main.temp)}°C</p>
+        <div class="w-full border-t border-white/10 pt-2 flex flex-col gap-1">
+            <div class="flex items-center gap-1 text-white/50 text-xs"><span>💧</span>${item.main.humidity}%</div>
+            <div class="flex items-center gap-1 text-white/50 text-xs"><span>💨</span>${Math.round(item.wind.speed * 3.6)} km/h</div>
+            <div class="flex items-center gap-1 text-white/50 text-xs"><span>🌡</span>${Math.round(item.main.feels_like)}°C</div>
+        </div>`;
+
+        grid.appendChild(c);
+    });
+
+    forecastSection.classList.remove("hidden");
+}
