@@ -262,7 +262,7 @@ function renderForecast(data) {
     forecastSection.classList.remove("hidden");
 }
 
-
+// For changing the units
 function setUnit(u) {
     unit = u;
     renderTemp();
@@ -320,6 +320,111 @@ function startRain() {
 }
 
 function stopRain() {
-  rainContainer.classList.add("hidden");
-  rainContainer.innerHTML = "";
+    rainContainer.classList.add("hidden");
+    rainContainer.innerHTML = "";
+}
+
+// For temperature alert
+function checkTempAlert(t) {
+    let msg = null;
+
+    if (t > 40) msg = `🔥 Extreme Heat: ${Math.round(t)}°C! Stay hydrated, avoid direct sunlight.`;
+    else if (t > 35) msg = `☀️ Heat Advisory: ${Math.round(t)}°C. Stay cool and drink plenty of water.`;
+    else if (t < -10) msg = `❄️ Extreme Cold: ${Math.round(t)}°C! Dress warmly and limit time outdoors.`;
+
+    if (msg) {
+        tempAlertMsg.textContent = msg;
+        tempAlert.classList.remove("hidden");
+        tempAlert.classList.add("slide-down");  
+        setTimeout(() => tempAlert.classList.add("hidden"), 12000); 
+    } else {
+        tempAlert.classList.add("hidden"); 
+    }
+}
+
+// For loading Recent Cities from localStorage
+function loadRecent() {
+    try {
+        recentCities = JSON.parse(localStorage.getItem("recent")) || [];
+    } catch {
+        recentCities = [];
+    }
+}
+
+// Saves the recent city that was searched
+function saveRecent(city) {
+    recentCities = recentCities.filter(c => c.toLowerCase() !== city.toLowerCase());
+    recentCities.unshift(city);          
+    recentCities = recentCities.slice(0, 8); 
+    try { localStorage.setItem("recent", JSON.stringify(recentCities)); } catch {}
+}
+
+// Clears recent-cities list from memory and localStorage */
+function clearRecentCities() {
+    recentCities = [];
+    try { localStorage.removeItem("recent"); } catch {}
+    closeDropdown();
+    showToast("✓ Recent searches cleared.", "success");
+}
+
+// For dropdown list of the recent cities searched
+function renderDropdown() {
+    if (!recentCities.length) { closeDropdown(); return; }
+
+    recentList.innerHTML = "";
+
+    recentCities.forEach(city => {
+        const li = document.createElement("li");
+        li.className = "recent-item";
+
+        const label = document.createElement("span");
+        label.className = "flex items-center gap-2 flex-1";
+        label.innerHTML = `<span style="color:rgba(255,255,255,.3);font-size:.85rem">🕐</span>${city}`;
+
+        const rmv = document.createElement("button");
+        rmv.textContent = "×";
+        rmv.className   = "text-white/30 hover:text-red-400 text-lg leading-none transition-colors flex-shrink-0";
+        rmv.onclick = e => {
+            e.stopPropagation(); 
+            recentCities = recentCities.filter(c => c !== city);
+            try { localStorage.setItem("recent", JSON.stringify(recentCities)); } catch {}
+            renderDropdown(); 
+        };
+
+        li.append(label, rmv);
+
+        li.onclick = () => {
+            cityInput.value = city.split(",")[0].trim(); 
+            closeDropdown();
+            fetchByCity(city.split(",")[0].trim());
+        };
+
+        recentList.appendChild(li);
+    });
+
+    recentDropdown.classList.remove("hidden");
+    dropdownOpen = true;
+}
+
+// Hides the recent-cities dropdown
+function closeDropdown() {
+    recentDropdown.classList.add("hidden");
+    dropdownOpen = false;
+}
+
+// Shows/hides the clear (×) button based on whether the input has a value
+function onInput() {
+    clearBtn.classList.toggle("hidden", !cityInput.value);
+}
+
+// Opens the recent-cities dropdown when the input is focused (if there are entries)
+function onFocus() {
+    if (recentCities.length) renderDropdown();
+}
+
+// Clears the city input field and returns focus to it
+function clearSearch() {
+    cityInput.value = "";
+    clearBtn.classList.add("hidden");
+    cityInput.focus();
 }
